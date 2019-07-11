@@ -9,12 +9,24 @@ endif()
 project(helloworld VERSION 0.0.${VERSION})
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(GTest REQUIRED)
+find_package(Threads)
 
 configure_file(version.h.in version.h)
 
 add_executable(helloworld_cli main.cpp)
 add_library(helloworld lib.cpp)
 add_executable(test_version test_version.cpp)
+
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
+add_executable(test_version_gtest test_version_gtest.cpp)
+
+target_link_libraries( test_version_gtest
+        gtest
+        gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
+        helloworld)
 
 set_target_properties(helloworld_cli helloworld test_version PROPERTIES
     CXX_STANDARD 14
@@ -75,3 +87,4 @@ include(CPack)
 enable_testing()
 
 add_test(test_version test_version)
+add_test(test_version_gtest test_version_gtest)
